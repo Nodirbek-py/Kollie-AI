@@ -1,7 +1,8 @@
+import Radio from "../../components/Radio";
 import { useHook } from "./useHook";
 
 export default function NewNumber() {
-  const { register, handleSubmit, watch, errors, onSubmit } = useHook();
+  const { register, handleSubmit, errors, onSubmit } = useHook();
   return (
     <div>
       <div className="h-32 flex flex-col justify-center max-h-32 border-b-neutral-200 border-b px-8">
@@ -12,89 +13,74 @@ export default function NewNumber() {
       </div>
       <div className="p-8">
         <form
-          className="mx-auto max-w-md shadow-lg rounded-xl p-2 bg-neutral-100"
+          className="mx-auto max-w-md shadow-lg rounded-xl p-4 bg-neutral-100"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="flex items-center">
+          <div className="flex flex-col mb-4">
             <label htmlFor="number">Phone Number</label>
-            <div className="ml-auto">
+            <div className="flex items-center col-span-3">
               <select
                 id="country"
-                className="bg-white border w-max outline-none border-neutral-200 rounded-r-none text-neutral-900 text-sm rounded-lg block px-2.5 h-10"
-                {...(register("country"), { required: true })}
+                className="bg-white border outline-none border-neutral-200 rounded-r-none text-neutral-900 text-sm rounded-lg block px-2.5 h-10 w-14"
+                {...register("countryCode", {
+                  required: {
+                    value: true,
+                    message: "Country selection is required",
+                  },
+                })}
               >
-                <option selected>🌎</option>
+                <option value="">🌎</option>
                 <option value="+49">🇩🇪 (+49)</option>
                 <option value="+31">🇳🇱 (+31)</option>
                 <option value="+33">🇫🇷 (+33)</option>
                 <option value="+32">🇧🇪 (+32)</option>
                 <option value="+43">🇦🇹 (+43)</option>
               </select>
-            </div>
-            <div>
               <input
-                {...(register("number"), { max: 12 })}
-                type="number"
+                {...register("number", {
+                  required: {
+                    value: true,
+                    message: "Phone number is required",
+                  },
+                  maxLength: {
+                    value: 12,
+                    message: "Phone number cannot exceed 12 digits",
+                  },
+                })}
+                type="text"
                 className="bg-white border w-full border-neutral-200 rounded-l-none border-l-0 outline-none text-neutral-900 text-sm rounded-lg block px-2.5 h-10"
               />
             </div>
+            {errors.countryCode && (
+              <span className="text-red-700 text-xs">
+                {errors.countryCode.message}
+              </span>
+            )}
+            {errors.number && (
+              <span className="text-red-700 text-xs">
+                {errors.number.message}
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-4">
-            <label htmlFor="number">Number Type</label>
-            <div className="flex items-center">
-              <input
-                id="country-option-1"
-                type="radio"
-                name="type"
-                value="local"
-                className="w-4 h-4 outline-none mr-2 bg-gray-700 border-gray-600"
-                {...(register("type"), { required: true })}
-                checked
-              />
-              <label
-                htmlFor="country-option-1"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Local
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="country-option-1"
-                type="radio"
-                name="type"
-                value="mobile"
-                className="w-4 h-4 outline-none mr-2 bg-gray-700 border-gray-600"
-                {...(register("type"), { required: true })}
-              />
-              <label
-                htmlFor="country-option-1"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Mobile
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="country-option-1"
-                type="radio"
-                name="type"
-                value="national"
-                className="w-4 h-4 outline-none mr-2 bg-gray-700 border-gray-600"
-                {...(register("type"), { required: true })}
-              />
-              <label
-                htmlFor="country-option-1"
-                className="block text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                National
-              </label>
-            </div>
-          </div>
+          <Radio
+            label="Number Type"
+            name="type"
+            options={[
+              { value: "local", label: "Local" },
+              { value: "mobile", label: "Mobile" },
+              { value: "national", label: "National" },
+            ]}
+            register={register}
+            error={errors.type}
+            errorMsg="Please select a document type"
+          />
 
-          {errors.country && <span>This field is required</span>}
-
-          <input type="submit" />
+          <input
+            disabled={Object.keys(errors).length > 0}
+            type="submit"
+            value="Next Step"
+            className="text-black block text-center bg-neutral-300 disabled:bg-neutral-200 disabled:hover:text-black disabled:cursor-not-allowed hover:bg-neutral-800 hover:text-white ml-auto transition-colors duration-300 outline-none font-medium rounded-lg text-sm px-5 py-2.5"
+          />
         </form>
       </div>
     </div>
